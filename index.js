@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
 var app = express();
-var classapi = $.getJSON('https://yogaia.com/api/lessons?upcoming=0&limit=20');
+var classapi = $.getJSON("https://yogaia.com/api/lessons?upcoming=0&limit=20");
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
