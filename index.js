@@ -88,7 +88,6 @@ function setStartButton() {
   			"call_to_actions":[{
       			"payload":"USER_DEFINED_PAYLOAD"
     		}]
-            }
         }
     }, function(error, response, body) {
         if (error) {
@@ -100,3 +99,4 @@ function setStartButton() {
 };
 
 setStartButton();
+
