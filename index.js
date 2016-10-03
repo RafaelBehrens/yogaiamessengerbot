@@ -30,6 +30,7 @@ app.post('/webhook', function (req, res) {
             sendMessage(event.sender.id, {text: "Hey you!"});
         } else if (event.postback) {
             console.log("Postback received: " + JSON.stringify(event.postback));
+            sendMessage(event.sender.id, {text: "You just got started"});
         }
     }
     res.sendStatus(200);
@@ -86,7 +87,7 @@ function setStartButton() {
             "setting_type":"call_to_actions",
   			"thread_state":"new_thread",
   			"call_to_actions":[{
-      			"payload":"USER_DEFINED_PAYLOAD"
+      			"payload":"user clicked 'gets started'"
     		}]
         }
     }, function(error, response, body) {
