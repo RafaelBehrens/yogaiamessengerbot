@@ -90,9 +90,9 @@ function classdatasend(recipientId) {
 	
 	for(i=0; i<classes.length; i++){
 		if (classes[i].language == "en"){
-			var date = moment(classes[i].start_time, moment.ISO_8601)
+			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, hA");
 			var classarray = {
-				"title": classes[i].name + " - " + classes[i].instructor_name + " - " + date.format("ddd, hA"); ,
+				"title": classes[i].name + " - " + classes[i].instructor_name + " - " + date; ,
 				"subtitle": classes[i].description,
 				"image_url": "https://yogaia.com/" + classes[i].instructor_img,
 				"buttons":[{
