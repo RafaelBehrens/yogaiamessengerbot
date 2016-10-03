@@ -90,7 +90,7 @@ function classdatasend(recipientId) {
 	
 	for(i=0; i<11; i++){
 		if (classes[i].language == "en"){
-			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, hmA");
+			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, h:m A");
 			var classarray = {
 				"title": classes[i].name + " - " + classes[i].instructor_name + " - " + date,
 				"subtitle": classes[i].description,
