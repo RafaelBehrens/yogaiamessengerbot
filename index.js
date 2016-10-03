@@ -88,19 +88,21 @@ function classdatasend(recipientId) {
 	var classelements = [];
 	
 	for(i=0; i<classes.length; i++){
-		var classarray = {
-			"title": classes[i].name + " - " + classes[i].instructor_name + " - " + classes[i].start_time,
-			"subtitle": classes[i].description,
-			"image_url": "https://yogaia.com/" + classes[i].instructor_img,
-			"buttons":[{
-				"type": "web_url",
-				"url": "https://yogaia.com/view/" + classes[i].id,
-				"title": "Book"
-			}, {
-				"type": "element_share"
-			}]
-		};
-		classelements.push(classarray);
+		if (classes[i].language == "en"){
+			var classarray = {
+				"title": classes[i].name + " - " + classes[i].instructor_name + " - " + classes[i].start_time,
+				"subtitle": classes[i].description,
+				"image_url": "https://yogaia.com/" + classes[i].instructor_img,
+				"buttons":[{
+					"type": "web_url",
+					"url": "https://yogaia.com/view/" + classes[i].id,
+					"title": "Book"
+				}, {
+					"type": "element_share"
+				}]
+			};
+			classelements.push(classarray);
+		}
 	}
             
             
@@ -126,11 +128,10 @@ new CronJob('60 * * * * *', function(recipientId) {
     var query = client.query("SELECT senderid from items");
     query.on("row", function (row){
     	classdatasend(row.senderid);
-    	console.log(JSON.stringify(row.senderid));
+    	console.log("sent to..." + JSON.stringify(row.senderid));
     });
     query.on("end", function (result) {          
         client.end(); 
-        console.log('SenderID inserted');
     });
   
 }, null, true);
