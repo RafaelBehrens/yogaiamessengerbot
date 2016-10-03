@@ -32,6 +32,7 @@ app.post('/webhook', function (req, res) {
         var event = events[i];
   		if (event.postback) {
             console.log("Postback received: " + JSON.stringify(event.postback));
+            console.log(event.sender.id);
             sendMessage(event.sender.id, {text: "You just got started"});
         }
     }
