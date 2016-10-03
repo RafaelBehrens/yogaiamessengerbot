@@ -71,7 +71,7 @@ function sendMessage(recipientId, message) {
 };
 
 //url for classes JSON
-var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=25';
+var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=15';
 
 //get JSON, parse it and store it in classes variable
 request(url, (error, response, body)=> {
