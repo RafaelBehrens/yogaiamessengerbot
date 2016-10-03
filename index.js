@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
 var app = express();
-//var classapi = $.getJSON("https://yogaia.com/api/lessons?upcoming=0&limit=20");
+var classes = require('resources/classes.json');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -28,9 +28,7 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         var event = events[i];
         if (event.message && event.message.text) {
-            if (!kittenMessage(event.sender.id, event.message.text)) {
-                sendMessage(event.sender.id, {text: "Echo: " + classapi});
-            }
+            sendMessage(event.sender.id, {text: "Echo: " + classes});
         } else if (event.postback) {
             console.log("Postback received: " + JSON.stringify(event.postback));
         }
@@ -55,47 +53,4 @@ function sendMessage(recipientId, message) {
             console.log('Error: ', response.body.error);
         }
     });
-};
-// send rich message with kitten
-function kittenMessage(recipientId, text) {
-    
-    text = text || "";
-    var values = text.split(' ');
-    
-    if (values.length === 3 && values[0] === 'kitten') {
-        if (Number(values[1]) > 0 && Number(values[2]) > 0) {
-            
-            var imageUrl = "https://placekitten.com/" + Number(values[1]) + "/" + Number(values[2]);
-            
-            message = {
-                "attachment": {
-                    "type": "template",
-                    "payload": {
-                        "template_type": "generic",
-                        "elements": [{
-                            "title": "Kitten",
-                            "subtitle": "Cute kitten picture",
-                            "image_url": imageUrl ,
-                            "buttons": [{
-                                "type": "web_url",
-                                "url": imageUrl,
-                                "title": "Show kitten"
-                                }, {
-                                "type": "postback",
-                                "title": "I like this",
-                                "payload": "User " + recipientId + " likes kitten " + imageUrl,
-                            }]
-                        }]
-                    }
-                }
-            };
-    
-            sendMessage(recipientId, message);
-            
-            return true;
-        }
-    }
-    
-    return false;
-    
 };
