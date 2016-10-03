@@ -44,7 +44,7 @@ app.post('/webhook', function (req, res) {
             	client.end(); 
             	console.log('SenderID inserted');
         	});
-            sendMessage(event.sender.id, {text: "You just got started"});
+            sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
         }
     }
     res.sendStatus(200);
@@ -70,7 +70,7 @@ function sendMessage(recipientId, message) {
 };
 
 //url for classes JSON
-var url = 'https://yogaia.com/api/lessons?upcoming=0&limit=10';
+var url = 'https://yogaia.com/api/lessons?upcoming=0&limit=25';
 
 //get JSON, parse it and store it in classes variable
 request(url, (error, response, body)=> {
