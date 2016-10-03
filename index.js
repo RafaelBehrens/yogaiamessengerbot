@@ -76,20 +76,20 @@ function sendMessage(recipientId, message) {
 function classdatasend(recipientId) {
 	
 	var classelements = [];
-	
+	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
+	var classes = {};
+	//get JSON, parse it and store it in classes variable
+	request(url, (error, response, body)=> {
+  		if (!error && response.statusCode === 200) {
+    		classes = JSON.parse(body)
+    		console.log("Got a response")
+  		} else {
+    		console.log("Got an error: ", error, ", status code: ", response.statusCode)
+  		}
+	})	
 	for(i=0; i<11; i++){
 		//url for classes JSON
-		var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
-
-		//get JSON, parse it and store it in classes variable
-		request(url, (error, response, body)=> {
-  			if (!error && response.statusCode === 200) {
-    			classes = JSON.parse(body)
-    			console.log("Got a response")
-  			} else {
-    			console.log("Got an error: ", error, ", status code: ", response.statusCode)
-  			}
-		})	
+		
 		if (classes[i].language == "en"){
 			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, h:mm A");
 			var classarray = {
@@ -123,7 +123,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('60 * * * * *', function(recipientId) {
+new CronJob('30 * * * * *', function(recipientId) {
   	console.log('Sending class data to users...');
     const connectionString = process.env.DATABASE_URL;
     const client = new pg.Client(connectionString);
