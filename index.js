@@ -1,7 +1,11 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
+var fs = require('fs');
+var CronJob = require('cron').CronJob;
 var app = express();
+var pg = require('pg');
+
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -53,49 +57,15 @@ function sendMessage(recipientId, message) {
     });
 };
 
-function setGreeting() {
-	request({
-        url: 'https://graph.facebook.com/v2.6/1119887924743051/thread_settings',
-        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
-        method: 'POST',
-        json: {
-            "setting_type": "greeting",
-            "greeting":{
-            	"text": "Hi {{user_first_name}}, I'm a prototype bot by Yoga.ai. I'm currently a bit unsophisticated, but I'll try and let you know the day's upcoming live classes."
-            }
-        }
-    }, function(error, response, body) {
-        if (error) {
-            console.log('Error sending message: ', error);
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error);
-        }
-    });
-};
+const connectionString = process.env.DATABASE_URL;
 
-setGreeting();
+const client = new pg.Client(connectionString);
 
-//add get started button for first use
-function setStartButton() {
-	request({
-        url: 'https://graph.facebook.com/v2.6/1119887924743051/thread_settings',
-        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
-        method: 'POST',
-        json: {
-            "setting_type":"call_to_actions",
-  			"thread_state":"new_thread",
-  			"call_to_actions":[{
-      			"payload":"user clicked 'gets started'"
-    		}]
-        }
-    }, function(error, response, body) {
-        if (error) {
-            console.log('Error sending message: ', error);
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error);
-        }
-    });
-};
+client.connect();
 
-setStartButton();
+var query = client.query('CREATE TABLE items(id SERIAL PRIMARY KEY, senderid BIGINT, complete BOOLEAN)');   
+query.on("end", function (result) {          
+    client.end(); 
+        console.log('items table created');  
+});
 
