@@ -57,15 +57,15 @@ function sendMessage(recipientId, message) {
     });
 };
 
-const connectionString = process.env.DATABASE_URL;
+//url for classes JSON
+var url = 'https://yogaia.com/api/lessons?upcoming=0&limit=10';
 
-const client = new pg.Client(connectionString);
-
-client.connect();
-
-var query = client.query('CREATE TABLE items(id SERIAL PRIMARY KEY, senderid BIGINT, complete BOOLEAN)');   
-query.on("end", function (result) {          
-    client.end(); 
-        console.log('items table created');  
-});
-
+//get JSON, parse it and store it in classes variable
+request(url, (error, response, body)=> {
+  if (!error && response.statusCode === 200) {
+    classes = JSON.parse(body)
+    console.log("Got a response")
+  } else {
+    console.log("Got an error: ", error, ", status code: ", response.statusCode)
+  }
+})
