@@ -70,25 +70,23 @@ function sendMessage(recipientId, message) {
     });
 };
 
-
-
-//send class data
-function classdatasend(recipientId) {
-
-	//url for classes JSON
+//url for classes JSON
 var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 
 //get JSON, parse it and store it in classes variable
 request(url, (error, response, body)=> {
   if (!error && response.statusCode === 200) {
-     var classes = JSON.parse(body)
-     console.log("Got a response")
+     var classes = JSON.parse(body);
+     console.log("Got a response");
      return classes;
   } else {
     console.log("Got an error: ", error, ", status code: ", response.statusCode)
   }
   return classes;
 })
+
+//send class data
+function classdatasend(recipientId) {
 	
 	var classelements = [];
 	
