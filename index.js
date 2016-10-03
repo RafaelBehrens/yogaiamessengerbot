@@ -118,7 +118,7 @@ new CronJob('60 * * * * *', function(recipientId) {
   	console.log('Sending class data to users...');
   	//url for classes JSON
     var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
-    var classes;
+    var classes = {};
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
   	    if (!error && response.statusCode === 200) {
