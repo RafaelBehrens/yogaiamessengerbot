@@ -70,22 +70,22 @@ function sendMessage(recipientId, message) {
     });
 };
 
-//url for classes JSON
-var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 
-//get JSON, parse it and store it in classes variable
-request(url, (error, response, body)=> {
-  if (!error && response.statusCode === 200) {
-    classes = JSON.parse(body)
-    console.log("Got a response")
-  } else {
-    console.log("Got an error: ", error, ", status code: ", response.statusCode)
-  }
-})
 
 //send class data
 function classdatasend(recipientId) {
-	
+	//url for classes JSON
+    var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
+
+    //get JSON, parse it and store it in classes variable
+    request(url, (error, response, body)=> {
+        if (!error && response.statusCode === 200) {
+            classes = JSON.parse(body)
+            console.log("Got a response")
+        } else {
+            console.log("Got an error: ", error, ", status code: ", response.statusCode)
+       }
+    })
 	var classelements = [];
 	
 	for(i=0; i<11; i++){
@@ -129,7 +129,52 @@ new CronJob('60 * * * * *', function(recipientId) {
     client.connect();
     var query = client.query("SELECT senderid from items");
     query.on("row", function (row){
-    	classdatasend(row.senderid);
+    	//url for classes JSON
+    	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
+
+    	//get JSON, parse it and store it in classes variable
+    	request(url, (error, response, body)=> {
+        	if (!error && response.statusCode === 200) {
+            	classes = JSON.parse(body)
+            	console.log("Got a response")
+        	} else {
+            	console.log("Got an error: ", error, ", status code: ", response.statusCode)
+       		}
+    	})
+		var classelements = [];
+	
+		for(i=0; i<11; i++){
+			if (classes[i].language == "en"){
+				var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, h:mm A");
+				var classarray = {
+					"title": classes[i].name + " - " + classes[i].instructor_name + " - " + date,
+					"subtitle": classes[i].description,
+					"image_url": "https://yogaia.com/" + classes[i].instructor_img,
+					"buttons":[{
+						"type": "web_url",
+						"url": "https://yogaia.com/view/" + classes[i].id,
+						"title": "Book"
+					}, {
+						"type": "element_share"
+					}]
+				};
+				classelements.push(classarray);
+			}
+		}
+            
+            
+    	var message = {
+        	"attachment": {
+            	"type": "template",
+            	"payload": {
+                	"template_type": "generic",
+                	"elements": classelements,
+            	}
+        	}
+    	};
+    
+    	sendMessage(recipientId, message);
+
     	console.log("sent to..." + JSON.stringify(row.senderid));
     });
     query.on("end", function (result) {          
