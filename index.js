@@ -33,6 +33,17 @@ app.post('/webhook', function (req, res) {
   		if (event.postback) {
             console.log("Postback received: " + JSON.stringify(event.postback));
             console.log(event.sender.id);
+            const connectionString = process.env.DATABASE_URL;
+	    
+	       	const client = new pg.Client(connectionString);
+ 		
+			client.connect();
+			
+			var query = client.query("insert into items (senderid) values ('" + event.sender.id + "')");    
+        	query.on("end", function (result) {          
+            	client.end(); 
+            	console.log('SenderID inserted');
+        	});
             sendMessage(event.sender.id, {text: "You just got started"});
         }
     }
