@@ -71,7 +71,7 @@ function sendMessage(recipientId, message) {
 };
 
 //url for classes JSON
-var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=15';
+var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 
 //get JSON, parse it and store it in classes variable
 request(url, (error, response, body)=> {
@@ -88,7 +88,7 @@ function classdatasend(recipientId) {
 	
 	var classelements = [];
 	
-	for(i=0; i<classes.length; i++){
+	for(i=0; i<11; i++){
 		if (classes[i].language == "en"){
 			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, hmA");
 			var classarray = {
