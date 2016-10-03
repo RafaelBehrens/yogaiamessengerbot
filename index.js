@@ -81,3 +81,56 @@ request(url, (error, response, body)=> {
     console.log("Got an error: ", error, ", status code: ", response.statusCode)
   }
 })
+
+//send class data
+function classdatasend(recipientId) {
+	
+	var classelements = [];
+	
+	for(i=0; i<classes.length; i++){
+		var classarray = {
+			"title": classes[i].name + " - " + classes[i].instructor_name + " - " + classes[i].start_time,
+			"subtitle": classes[i].description,
+			"image_url": "https://yogaia.com/" + classes[i].instructor_img,
+			"buttons":[{
+				"type": "web_url",
+				"url": "https://yogaia.com/view/" + classes[i].id,
+				"title": "Book"
+			}, {
+				"type": "element_share"
+			}]
+		};
+		classelements.push(classarray);
+	}
+            
+            
+    var message = {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": classelements,
+            }
+        }
+    };
+    
+    sendMessage(recipientId, message);
+
+}
+
+new CronJob('60 * * * * *', function(recipientId) {
+  	console.log('You will see this message minute');
+    const connectionString = process.env.DATABASE_URL;
+    const client = new pg.Client(connectionString);
+    client.connect();
+    var query = client.query("SELECT senderid from items");
+    query.on("row", function (row){
+    	classdatasend(row.senderid);
+    	console.log(JSON.stringify(row.senderid));
+    });
+    query.on("end", function (result) {          
+        client.end(); 
+        console.log('SenderID inserted');
+    });
+  
+}, null, true);
