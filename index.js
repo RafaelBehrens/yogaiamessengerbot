@@ -118,7 +118,6 @@ function classdatasend(recipientId) {
 					"type": "element_share"
 				}]
 			};
-			console.log("class tile is..." + JSON.stringify(classtile));
 			classelements.push(classtile);
 		}
 	}
@@ -157,7 +156,6 @@ new CronJob('* 59 * * * *', function(recipientId) {
     		query.on("row", function (row){
     			classdatasend(row.senderid);
     			console.log("sent to..." + JSON.stringify(row.senderid));
-    			console.log('big success!');
     		});
     		query.on("end", function (result) {          
         		client.end(); 
