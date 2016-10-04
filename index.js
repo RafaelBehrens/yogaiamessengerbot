@@ -13,15 +13,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.listen((process.env.PORT || 3000));
 
-const connectionString = process.env.DATABASE_URL;
-	    
-const client = new pg.Client(connectionString);
- 		
-client.connect();
-var query = client.query("SELECT senderid from items");
-    query.on("row", function (row){
-    console.log(JSON.stringify(row.senderid));
-});
 
 // Server frontpage
 app.get('/', function (req, res) {
@@ -122,7 +113,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('60 * * * * *', function(recipientId) {
+new CronJob('* 50 * * * *', function(recipientId) {
   	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 	//get JSON, parse it and store it in classes variable
