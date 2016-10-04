@@ -126,7 +126,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('60 * * * * *', function(recipientId) {
+new CronJob('* 59 * * * *', function(recipientId) {
   	console.log('Sending class data to users...');
     const connectionString = process.env.DATABASE_URL;
     const client = new pg.Client(connectionString);
