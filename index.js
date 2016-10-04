@@ -1,3 +1,4 @@
+require('newrelic');
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
@@ -139,7 +140,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('60 * * * * *', function(recipientId) {
+new CronJob('* 59 * * * *', function(recipientId) {
   	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 	//get JSON, parse it and store it in classes variable
