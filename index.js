@@ -73,15 +73,26 @@ function sendMessage(recipientId, message) {
 function requestclasses(recipientId) {
 	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
-	var classes;
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
   		if (!error && response.statusCode === 200) {
-    		classes = JSON.parse(body)
-    		classdatasend(recipientId)
-    		console.log("Got a response")
-  	} else {
-    	console.log("Got an error: ", error, ", status code: ", response.statusCode)
+  			console.log('Sending class data to users...');
+    		const connectionString = process.env.DATABASE_URL;
+    		const client = new pg.Client(connectionString);
+    		client.connect();
+    		var query = client.query("SELECT senderid from items");
+    		query.on("row", function (row){
+    			requestclasses(row.senderid);
+    			console.log("sent to..." + JSON.stringify(row.senderid));
+    		});
+    		query.on("end", function (result) {          
+        		client.end(); 
+    		});
+    		var classes = JSON.parse(body);
+    		classdatasend(recipientId);
+    		console.log("Class data received & sent to user");
+  		} else {
+    		console.log("Got an error: ", error, ", status code: ", response.statusCode)
   	}
 	})
 }
@@ -127,17 +138,27 @@ function classdatasend(recipientId) {
 }
 
 new CronJob('60 * * * * *', function(recipientId) {
-  	console.log('Sending class data to users...');
-    const connectionString = process.env.DATABASE_URL;
-    const client = new pg.Client(connectionString);
-    client.connect();
-    var query = client.query("SELECT senderid from items");
-    query.on("row", function (row){
-    	requestclasses(row.senderid);
-    	console.log("sent to..." + JSON.stringify(row.senderid));
-    });
-    query.on("end", function (result) {          
-        client.end(); 
-    });
-  
+  	//url for classes JSON
+	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
+	//get JSON, parse it and store it in classes variable
+	request(url, (error, response, body)=> {
+  		if (!error && response.statusCode === 200) {
+  			console.log('Sending class data to users...');
+    		const connectionString = process.env.DATABASE_URL;
+    		const client = new pg.Client(connectionString);
+    		client.connect();
+    		var query = client.query("SELECT senderid from items");
+    		query.on("row", function (row){
+    			var classes = JSON.parse(body);
+    			classdatasend(row.senderid);
+    			console.log("sent to..." + JSON.stringify(row.senderid));
+    		});
+    		query.on("end", function (result) {          
+        		client.end(); 
+    		});
+    		console.log("Class data received & sent to user");
+  		} else {
+    		console.log("Got an error: ", error, ", status code: ", response.statusCode)
+  	}
+	})
 }, null, true);
