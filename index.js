@@ -6,6 +6,7 @@ var CronJob = require('cron').CronJob;
 var app = express();
 var pg = require('pg');
 var moment = require('moment');
+var classes;
 
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -70,25 +71,25 @@ function sendMessage(recipientId, message) {
     });
 };
 
-
-//send class data
-function classdatasend(recipientId) {
-	
-	var classelements = [];
+function requestclasses(recipientId) {
 	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
-	var classes;
-
+	
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
   		if (!error && response.statusCode === 200) {
     		classes = JSON.parse(body)
-    		console.log("Got a response")
+    		classdatasend(recipientId)
+    		console.log("Got a response from Yogaia server & sent classes")
   	} else {
     	console.log("Got an error: ", error, ", status code: ", response.statusCode)
   	}
 	})
-
+}
+//send class data
+function classdatasend(recipientId) {
+	
+	var classelements = [];
 	
 	for(i=0; i<11; i++){
 		if (classes[i].language == "en"){
@@ -131,7 +132,7 @@ new CronJob('60 * * * * *', function(recipientId) {
     client.connect();
     var query = client.query("SELECT senderid from items");
     query.on("row", function (row){
-    	classdatasend(row.senderid);
+    	requestclasses(row.senderid);
     	console.log("sent to..." + JSON.stringify(row.senderid));
     });
     query.on("end", function (result) {          
