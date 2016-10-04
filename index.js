@@ -6,7 +6,6 @@ var CronJob = require('cron').CronJob;
 var app = express();
 var pg = require('pg');
 var moment = require('moment');
-var classes;
 
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -74,7 +73,7 @@ function sendMessage(recipientId, message) {
 function requestclasses(recipientId) {
 	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
-	
+	var classes;
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
   		if (!error && response.statusCode === 200) {
