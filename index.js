@@ -155,11 +155,11 @@ new CronJob('60 * * * * *', function(recipientId) {
     		query.on("row", function (row){
     			classdatasend(row.senderid);
     			console.log("sent to..." + JSON.stringify(row.senderid));
+    			console.log('big success!');
     		});
     		query.on("end", function (result) {          
         		client.end(); 
     		});
-    		console.log('big success!');
 
   	} else {
     	console.log("Got an error: ", error, ", status code: ", response.statusCode)
