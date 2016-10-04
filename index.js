@@ -6,6 +6,7 @@ var CronJob = require('cron').CronJob;
 var app = express();
 var pg = require('pg');
 var moment = require('moment');
+var classes;
 
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -76,8 +77,9 @@ function requestclasses(recipientId) {
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
   		if (!error && response.statusCode === 200) {
-  			console.log('Sending class data to users...');
-    		const connectionString = process.env.DATABASE_URL;
+    		classes = JSON.parse(body);
+    		console.log('Sending class data to users...');
+   			const connectionString = process.env.DATABASE_URL;
     		const client = new pg.Client(connectionString);
     		client.connect();
     		var query = client.query("SELECT senderid from items");
@@ -88,11 +90,10 @@ function requestclasses(recipientId) {
     		query.on("end", function (result) {          
         		client.end(); 
     		});
-    		var classes = JSON.parse(body);
-    		classdatasend(recipientId);
-    		console.log("Class data received & sent to user");
-  		} else {
-    		console.log("Got an error: ", error, ", status code: ", response.statusCode)
+			classdatasend(recipientId);
+    		console.log("Got a response");
+  	} else {
+    	console.log("Got an error: ", error, ", status code: ", response.statusCode)
   	}
 	})
 }
@@ -143,22 +144,26 @@ new CronJob('60 * * * * *', function(recipientId) {
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
   		if (!error && response.statusCode === 200) {
-  			console.log('Sending class data to users...');
-    		const connectionString = process.env.DATABASE_URL;
+  			console.log('Yogaia query successful... storing classes variable');
+    		classes = JSON.parse(body);
+    		console.log('CONNECTING to database');
+   			const connectionString = process.env.DATABASE_URL;
     		const client = new pg.Client(connectionString);
     		client.connect();
+    		console.log('sending classes to users...');
     		var query = client.query("SELECT senderid from items");
     		query.on("row", function (row){
-    			var classes = JSON.parse(body);
     			classdatasend(row.senderid);
     			console.log("sent to..." + JSON.stringify(row.senderid));
     		});
     		query.on("end", function (result) {          
         		client.end(); 
     		});
-    		console.log("Class data received & sent to user");
-  		} else {
-    		console.log("Got an error: ", error, ", status code: ", response.statusCode)
+    		console.log('big success!');
+
+  	} else {
+    	console.log("Got an error: ", error, ", status code: ", response.statusCode)
   	}
 	})
+  
 }, null, true);
