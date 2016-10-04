@@ -90,7 +90,7 @@ function classdatasend(recipientId) {
 	var classelements = [];
 	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
-	const classes;
+	var classes;
 
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
@@ -137,7 +137,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('30 * * * * *', function(recipientId) {
+new CronJob('60 * * * * *', function(recipientId) {
   	console.log('Sending class data to users...');
     const connectionString = process.env.DATABASE_URL;
     const client = new pg.Client(connectionString);
