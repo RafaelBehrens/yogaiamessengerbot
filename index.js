@@ -103,7 +103,7 @@ function classdatasend(recipientId) {
 	var classelements = [];
 	
 	for(var i=0; i<classes.length; i++){
-		if (classes[i].language == "en" || classelements.length<10){
+		if (classes[i].language == "en" || classelements.length < 10){
 			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, h:mm A");
 			var classtile = {
 				"title": classes[i].name + " - " + classes[i].instructor_name + " - " + date,
