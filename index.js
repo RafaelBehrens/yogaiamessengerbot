@@ -71,39 +71,13 @@ function sendMessage(recipientId, message) {
     });
 };
 
-function requestclasses(recipientId) {
-	//url for classes JSON
-	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
-	//get JSON, parse it and store it in classes variable
-	request(url, (error, response, body)=> {
-  		if (!error && response.statusCode === 200) {
-    		classes = JSON.parse(body);
-    		console.log('Sending class data to users...');
-   			const connectionString = process.env.DATABASE_URL;
-    		const client = new pg.Client(connectionString);
-    		client.connect();
-    		var query = client.query("SELECT senderid from items");
-    		query.on("row", function (row){
-    			requestclasses(row.senderid);
-    			console.log("sent to..." + JSON.stringify(row.senderid));
-    		});
-    		query.on("end", function (result) {          
-        		client.end(); 
-    		});
-			classdatasend(recipientId);
-    		console.log("Got a response");
-  	} else {
-    	console.log("Got an error: ", error, ", status code: ", response.statusCode)
-  	}
-	})
-}
 //send class data
 function classdatasend(recipientId) {
 	
 	var classelements = [];
 	
 	for(var i=0; i<classes.length; i++){
-		if (classes[i].language == "en" && classelements.length < 10){
+		if (classes[i].language == "en" || classelements.length < 10){
 			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, h:mm A");
 			var classtile = {
 				"title": classes[i].name + " - " + classes[i].instructor_name + " - " + date,
@@ -138,7 +112,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('* 59 * * * *', function(recipientId) {
+new CronJob('60 * * * * *', function(recipientId) {
   	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 	//get JSON, parse it and store it in classes variable
@@ -155,6 +129,7 @@ new CronJob('* 59 * * * *', function(recipientId) {
     		query.on("row", function (row){
     			classdatasend(row.senderid);
     			console.log("sent to..." + JSON.stringify(row.senderid));
+    			console.log('big success!');
     		});
     		query.on("end", function (result) {          
         		client.end(); 
