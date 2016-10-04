@@ -91,7 +91,7 @@ function classdatasend(recipientId) {
 	
 	var classelements = [];
 	
-	for(i=0; i<11; i++){
+	for(var i=0; i<11; i++){
 		if (classes[i].language == "en"){
 			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, h:mm A");
 			var classtile = {
@@ -106,7 +106,7 @@ function classdatasend(recipientId) {
 					"type": "element_share"
 				}]
 			};
-			console.log(classtile);
+			console.log("class tile is..." + classtile);
 			classelements.push(classtile);
 		}
 	}
