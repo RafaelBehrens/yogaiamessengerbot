@@ -1,8 +1,14 @@
+require('newrelic');
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
+var fs = require('fs');
+var CronJob = require('cron').CronJob;
 var app = express();
-//var classapi = $.getJSON("https://yogaia.com/api/lessons?upcoming=0&limit=20");
+var pg = require('pg');
+var moment = require('moment');
+var classes;
+
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -27,12 +33,21 @@ app.post('/webhook', function (req, res) {
     var events = req.body.entry[0].messaging;
     for (i = 0; i < events.length; i++) {
         var event = events[i];
-        if (event.message && event.message.text) {
-            if (!kittenMessage(event.sender.id, event.message.text)) {
-                sendMessage(event.sender.id, {text: "Echo: " + classapi});
-            }
-        } else if (event.postback) {
+  		if (event.postback) {
             console.log("Postback received: " + JSON.stringify(event.postback));
+            console.log(event.sender.id);
+            const connectionString = process.env.DATABASE_URL;
+	    
+	       	const client = new pg.Client(connectionString);
+ 		
+			client.connect();
+			
+			var query = client.query("insert into items (senderid) values ('" + event.sender.id + "')");    
+        	query.on("end", function (result) {          
+            	client.end(); 
+            	console.log('SenderID inserted');
+        	});
+            sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
         }
     }
     res.sendStatus(200);
@@ -56,46 +71,101 @@ function sendMessage(recipientId, message) {
         }
     });
 };
-// send rich message with kitten
-function kittenMessage(recipientId, text) {
-    
-    text = text || "";
-    var values = text.split(' ');
-    
-    if (values.length === 3 && values[0] === 'kitten') {
-        if (Number(values[1]) > 0 && Number(values[2]) > 0) {
+
+function requestclasses(recipientId) {
+	//url for classes JSON
+	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
+	//get JSON, parse it and store it in classes variable
+	request(url, (error, response, body)=> {
+  		if (!error && response.statusCode === 200) {
+    		classes = JSON.parse(body);
+    		console.log('Sending class data to users...');
+   			const connectionString = process.env.DATABASE_URL;
+    		const client = new pg.Client(connectionString);
+    		client.connect();
+    		var query = client.query("SELECT senderid from items");
+    		query.on("row", function (row){
+    			requestclasses(row.senderid);
+    			console.log("sent to..." + JSON.stringify(row.senderid));
+    		});
+    		query.on("end", function (result) {          
+        		client.end(); 
+    		});
+			classdatasend(recipientId);
+    		console.log("Got a response");
+  	} else {
+    	console.log("Got an error: ", error, ", status code: ", response.statusCode)
+  	}
+	})
+}
+//send class data
+function classdatasend(recipientId) {
+	
+	var classelements = [];
+	
+	for(var i=0; i<classes.length; i++){
+		if (classes[i].language == "en" && classelements.length < 10){
+			var date = moment(classes[i].start_time, moment.ISO_8601).format("ddd, h:mm A");
+			var classtile = {
+				"title": classes[i].name + " - " + classes[i].instructor_name + " - " + date,
+				"subtitle": classes[i].description,
+				"image_url": "https://yogaia.com/" + classes[i].instructor_img,
+				"buttons":[{
+					"type": "web_url",
+					"url": "https://yogaia.com/view/" + classes[i].id,
+					"title": "Book"
+				}, {
+					"type": "element_share"
+				}]
+			};
+			console.log("class tile is..." + JSON.stringify(classtile));
+			classelements.push(classtile);
+		}
+	}
+	
+	console.log(classelements);
             
-            var imageUrl = "https://placekitten.com/" + Number(values[1]) + "/" + Number(values[2]);
-            
-            message = {
-                "attachment": {
-                    "type": "template",
-                    "payload": {
-                        "template_type": "generic",
-                        "elements": [{
-                            "title": "Kitten",
-                            "subtitle": "Cute kitten picture",
-                            "image_url": imageUrl ,
-                            "buttons": [{
-                                "type": "web_url",
-                                "url": imageUrl,
-                                "title": "Show kitten"
-                                }, {
-                                "type": "postback",
-                                "title": "I like this",
-                                "payload": "User " + recipientId + " likes kitten " + imageUrl,
-                            }]
-                        }]
-                    }
-                }
-            };
-    
-            sendMessage(recipientId, message);
-            
-            return true;
+    var message = {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": classelements,
+            }
         }
-    }
+    };
     
-    return false;
-    
-};
+    sendMessage(recipientId, {text: "Good morning! Here's the schedule for the next couple of days, hope you find something you like!"});
+    sendMessage(recipientId, message);
+
+}
+
+new CronJob('* 59 * * * *', function(recipientId) {
+  	//url for classes JSON
+	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
+	//get JSON, parse it and store it in classes variable
+	request(url, (error, response, body)=> {
+  		if (!error && response.statusCode === 200) {
+  			console.log('Yogaia query successful... storing classes variable');
+    		classes = JSON.parse(body);
+    		console.log('CONNECTING to database');
+   			const connectionString = process.env.DATABASE_URL;
+    		const client = new pg.Client(connectionString);
+    		client.connect();
+    		console.log('sending classes to users...');
+    		var query = client.query("SELECT senderid from items");
+    		query.on("row", function (row){
+    			classdatasend(row.senderid);
+    			console.log("sent to..." + JSON.stringify(row.senderid));
+    			console.log('big success!');
+    		});
+    		query.on("end", function (result) {          
+        		client.end(); 
+    		});
+
+  	} else {
+    	console.log("Got an error: ", error, ", status code: ", response.statusCode)
+  	}
+	})
+  
+}, null, true);
