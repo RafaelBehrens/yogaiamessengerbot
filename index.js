@@ -106,7 +106,7 @@ function classdatasend(recipientId) {
 					"type": "element_share"
 				}]
 			};
-			console.log("class tile is..." + classtile);
+			console.log("class tile is..." + classtile.title);
 			classelements.push(classtile);
 		}
 	}
