@@ -80,7 +80,7 @@ function requestclasses(recipientId) {
   		if (!error && response.statusCode === 200) {
     		classes = JSON.parse(body)
     		classdatasend(recipientId)
-    		console.log("Got a response from Yogaia server & sent classes")
+    		console.log("Got a response")
   	} else {
     	console.log("Got an error: ", error, ", status code: ", response.statusCode)
   	}
@@ -121,6 +121,7 @@ function classdatasend(recipientId) {
         }
     };
     
+    sendMessage(recipientId, {text: "Good morning! Here's the schedule for the next couple of days, hope you find something you like!"});
     sendMessage(recipientId, message);
 
 }
