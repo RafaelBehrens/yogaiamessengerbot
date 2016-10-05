@@ -6,6 +6,7 @@ var CronJob = require('cron').CronJob;
 var app = express();
 var pg = require('pg');
 var moment = require('moment');
+var cron = require('node-cron');
 var classes;
 
 
@@ -113,7 +114,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('* 15 8 * * *', function() {
+cron.schedule('* 50 * * * *', function() {
   	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 	//get JSON, parse it and store it in classes variable
@@ -141,4 +142,4 @@ new CronJob('* 15 8 * * *', function() {
   	}
 	})
   
-}, null, true);
+});
