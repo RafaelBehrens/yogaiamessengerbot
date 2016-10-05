@@ -113,7 +113,7 @@ function classdatasend(recipientId) {
 
 }
 
-new CronJob('0 */50 * * * *', function(recipientId) {
+new CronJob('* 15 8 * * *', function() {
   	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 	//get JSON, parse it and store it in classes variable
