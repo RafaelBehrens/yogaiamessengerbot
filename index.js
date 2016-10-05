@@ -114,7 +114,7 @@ function classdatasend(recipientId) {
 
 }
 
-cron.schedule('* 50 * * * *', function() {
+cron.schedule('* */50 * * * *', function() {
   	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 	//get JSON, parse it and store it in classes variable
