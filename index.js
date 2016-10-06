@@ -147,7 +147,7 @@ function cronJob(){
 
 var dailyjob = new cron.schedule('* */25 * * * *', function() {
   	if(cronIsAllowed){
-  		cronjob();
+  		cronJob();
   		cronIsAllowed = false;
   		window.setTimeout(function(){
   			cronIsAllowed = true;
