@@ -96,8 +96,7 @@ function classdatasend(recipientId) {
 			classelements.push(classtile);
 		}
 	}
-	
-	console.log(classelements);
+
             
     var message = {
         "attachment": {
