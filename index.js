@@ -147,9 +147,11 @@ var dailyjob = new cron.schedule('* */25 * * * *', function() {
   	if(cronIsAllowed){
   		cronJob();
   		cronIsAllowed = false;
+  		console.log("cronIsAllowed set to false");
   		window.setTimeout(function(){
   			cronIsAllowed = true;
-  		}, 60000);
+  			console.log("cronIsAllowed set to true");
+  		}, 1000*60);
   	}
   
 });
