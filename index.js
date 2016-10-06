@@ -132,7 +132,6 @@ function cronJob(){
     		query.on("row", function (row){
     			classdatasend(row.senderid);
     			console.log("sent to..." + JSON.stringify(row.senderid));
-    			console.log('big success!');
     		});
     		query.on("end", function (result) {          
         		client.end(); 
@@ -150,7 +149,7 @@ var dailyjob = new cron.schedule('* */25 * * * *', function() {
   		cronIsAllowed = false;
   		window.setTimeout(function(){
   			cronIsAllowed = true;
-  		}, 1000*60);
+  		}, 60000);
   	}
   
 });
