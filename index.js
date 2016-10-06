@@ -114,8 +114,10 @@ function classdatasend(recipientId) {
 
 }
 
-var dailyjob = new cron.schedule('*/1 */25 * * * *', function() {
-  	//url for classes JSON
+var cronIsAllowed = true;
+
+function cronJob(){
+	//url for classes JSON
 	var url = 'https://yogaia.com/api/lessons?upcoming=1&limit=30';
 	//get JSON, parse it and store it in classes variable
 	request(url, (error, response, body)=> {
@@ -141,6 +143,16 @@ var dailyjob = new cron.schedule('*/1 */25 * * * *', function() {
     	console.log("Got an error: ", error, ", status code: ", response.statusCode)
   	}
 	})
+}
+
+var dailyjob = new cron.schedule('* */25 * * * *', function() {
+  	if(cronIsAllowed){
+  		cronjob();
+  		cronIsAllowed = false;
+  		window.setTimeout(function(){
+  			cronIsAllowed = true;
+  		}, 1000*60);
+  	}
   
 });
 
