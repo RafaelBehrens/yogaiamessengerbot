@@ -43,7 +43,7 @@ app.post('/webhook', function (req, res) {
  		
 			client.connect();
 			
-			var checkquery = client.query("select exists(select 1 from items where senderid = '" + event.sender.id + "')")
+			/*var checkquery = client.query("select exists(select 1 from items where senderid = '" + event.sender.id + "')")
 			if (!checkquery){
 				var query = client.query("insert into items (senderid) values ('" + event.sender.id + "')");    
         		query.on("end", function (result) {          
@@ -56,7 +56,7 @@ app.post('/webhook', function (req, res) {
             }
             checkquery.on("end", function (result) {          
             		client.end(); 
-        		});
+        		});*/
         } else if (event.message && event.message.text) {
         	console.log("Message received: " + event.message.text);
         } 
