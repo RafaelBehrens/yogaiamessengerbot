@@ -43,13 +43,18 @@ app.post('/webhook', function (req, res) {
  		
 			client.connect();
 			
-			var query = client.query("insert into items (senderid) values ('" + event.sender.id + "')");    
-        	query.on("end", function (result) {          
-            	client.end(); 
-            	console.log('SenderID inserted');
-        	});
-            sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
-        }
+			var checkquery = client.query("select exists(select 1 from items where senderid = '" + event.sender.id + "')")
+			if (!checkquery){
+				var query = client.query("insert into items (senderid) values ('" + event.sender.id + "')");    
+        		query.on("end", function (result) {          
+            		client.end(); 
+            		console.log('SenderID inserted');
+        		});
+            	sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
+            } else {
+            	sendMessage(event.sender.id, {text: "I'm sorry, I don't quite understand..."});
+            }
+        } 
     }
     res.sendStatus(200);
 });
@@ -108,7 +113,7 @@ function classdatasend(recipientId) {
         }
     };
     
-    sendMessage(recipientId, {text: "Good morning! Here's the schedule for the next couple of days, hope you find something you like!"});
+    sendMessage(recipientId, {text: "Good morning! Here's what we have coming up."});
     sendMessage(recipientId, message);
 
 }
@@ -143,7 +148,7 @@ function cronJob(){
 	})
 }
 
-var dailyjob = new cron.schedule('* */25 * * * *', function() {
+var dailyjob = new cron.schedule('* 15 08 * * *', function() {
   	if(cronIsAllowed){
   		cronJob();
   		cronIsAllowed = false;
