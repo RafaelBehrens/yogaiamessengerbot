@@ -54,6 +54,9 @@ app.post('/webhook', function (req, res) {
             } else {
             	sendMessage(event.sender.id, {text: "I'm sorry, I don't quite understand..."});
             }
+            checkquery.on("end", function (result) {          
+            		client.end(); 
+        		});
         } else if (event.message && event.message.text) {
         	console.log("Message received: " + event.message.text);
         } 
