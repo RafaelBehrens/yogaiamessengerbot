@@ -53,6 +53,7 @@ app.post('/webhook', function (req, res) {
         		});
             	sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
             } else {
+            	console.log("value already in database");
             	sendMessage(event.sender.id, {text: "I'm sorry, I don't quite understand..."});
             }
             checkquery.on("end", function (result) {          
