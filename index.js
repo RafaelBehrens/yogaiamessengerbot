@@ -34,33 +34,22 @@ app.post('/webhook', function (req, res) {
     var events = req.body.entry[0].messaging;
     for (i = 0; i < events.length; i++) {
         var event = events[i];
-  		//if (event.postback) {
-  		
+  		if (event.postback) {
             console.log("Postback received: " + JSON.stringify(event.postback));
             console.log(event.sender.id);
-            /*const connectionString = process.env.DATABASE_URL;
+            const connectionString = process.env.DATABASE_URL;
 	    
 	       	const client = new pg.Client(connectionString);
  		
 			client.connect();
 			
-			var checkquery = client.query("select exists(select 1 from items where senderid = '" + event.sender.id + "')")
-			if (!checkquery){
-				var query = client.query("insert into items (senderid) values ('" + event.sender.id + "')");    
-        		query.on("end", function (result) {          
-            		client.end(); 
-            		console.log('SenderID inserted');
-        		});
-            	sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
-            } else {
-            	sendMessage(event.sender.id, {text: "I'm sorry, I don't quite understand..."});
-            }
-            checkquery.on("end", function (result) {          
-            		client.end(); 
-        		});
-        } else */if (event.message && event.message.text) {
-        	console.log("Message received: " + event.message.text);
-        } 
+			var query = client.query("insert into items (senderid) values ('" + event.sender.id + "')");    
+        	query.on("end", function (result) {          
+            	client.end(); 
+            	console.log('SenderID inserted');
+        	});
+            sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
+        }
     }
     res.sendStatus(200);
 });
@@ -119,7 +108,7 @@ function classdatasend(recipientId) {
         }
     };
     
-    sendMessage(recipientId, {text: "Good morning! Here's what we have coming up."});
+    sendMessage(recipientId, {text: "Good morning! Here's the schedule for the next couple of days, hope you find something you like!"});
     sendMessage(recipientId, message);
 
 }
