@@ -49,6 +49,8 @@ app.post('/webhook', function (req, res) {
             	console.log('SenderID inserted');
         	});
             sendMessage(event.sender.id, {text: "Great to have you on board! I'll message you daily at around 8am GMT with some upcoming live classes, namaste!"});
+        } else if (event.postback) {
+        	console.log("Message received: " + event.message.text);	
         }
     }
     res.sendStatus(200);
