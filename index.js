@@ -155,7 +155,7 @@ function cronJob(){
 	})
 }
 
-var dailyjob = new cron.schedule('* * * * * *', function() {
+var dailyjob = new cron.schedule('* 15 08 * * *', function() {
   	if(cronIsAllowed){
   		cronJob();
   		cronIsAllowed = false;
